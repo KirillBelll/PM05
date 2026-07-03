@@ -47,3 +47,4 @@
 - `src/app/(site)` — публичные страницы сайта
 - `src/app/admin` — админ-панель (защищена логином, см. `src/proxy.ts`)
 - `prisma/schema.prisma` — модели данных, `prisma/seed.ts` — демо-контент
+- `bd.sql` — дамп MySQL-базы для быстрого импорта без сида
