@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum DealType {
+  SALE
+  RENT
+}
+
+enum PropertyType {
+  APARTMENT
+  STUDIO
+  HOUSE
+  COMMERCIAL
+}
+
+enum PropertyStatus {
+  ACTIVE
+  RESERVED
+  SOLD
+}
+
+model Agent {
+  id         Int        @id @default(autoincrement())
+  slug       String     @unique
+  name       String
+  role       String
+  phone      String
+  email      String
+  photo      String
+  bio        String     @db.Text
+  dealsCount Int        @default(0)
+  properties Property[]
+  createdAt  DateTime   @default(now())
+}
+
+model Property {
+  id          Int             @id @default(autoincrement())
+  code        String          @unique
+  title       String
+  dealType    DealType
+  type        PropertyType
+  status      PropertyStatus  @default(ACTIVE)
+  city        String
+  district    String
+  address     String
+  price       Int
+  areaTotal   Float
+  areaLiving  Float?
+  areaKitchen Float?
+  rooms       Int
+  floor       Int?
+  floorsTotal Int?
+  yearBuilt   Int?
+  description String          @db.Text
+  featured    Boolean         @default(false)
+  lat         Float?
+  lng         Float?
+  images      PropertyImage[]
+  agentId     Int
+  agent       Agent           @relation(fields: [agentId], references: [id])
+  leads       Lead[]
+  createdAt   DateTime        @default(now())
+
+  @@index([city])
+  @@index([dealType])
+  @@index([type])
+}
+
+model PropertyImage {
+  id         Int      @id @default(autoincrement())
+  url        String
+  alt        String
+  order      Int      @default(0)
+  propertyId Int
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id         Int       @id @default(autoincrement())
+  name       String
+  phone      String
+  message    String?   @db.Text
+  source     String    @default("contact")
+  propertyId Int?
+  property   Property? @relation(fields: [propertyId], references: [id])
+  createdAt  DateTime  @default(now())
+}
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  role      String
+  quote     String   @db.Text
+  rating    Int      @default(5)
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}
